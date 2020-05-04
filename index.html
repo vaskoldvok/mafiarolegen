@@ -5,189 +5,60 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Mafia Role Manager 0.0.1</title>
+    <title>Mafia Role Manager 0.0.4</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://code.jquery.com/jquery-3.5.0.min.js"></script>
 </head>
 
 <body>
     <div class="container">
         <div class="card">
+            <h2>Памятка по дополнительным ролям</h2>
+            <ul class="rules">
+                <li class="diavolo">Дон мафии ночью проверяет, является ли указанный им игрок комиссаром</li>
+                <li class="trish">Дочь мафии - мирный житель поначалу, после смерти дона переходит на сторону мафии</li>
+                <li class="kommie">Комисcар ночью проверяет, играет ли указанный им игрок за мафию</li>
+                <li class="doc">Доктор ночью может спасти одного игрока от смерти; не может спасать одного и того же игрока два раза подряд</li>
+                <li class="maniac">Маньяк убивает одного игрока по ночам, играет против всех, побеждает, если остался один на один с другим игроком</li>
+            </ul>
+        </div>
+        <div class="card">
             <h1>Mafia Role Generator</h1>
             <fieldset>
-                <div id="howmuch-select">Сколько тел?</div>
+                <div id="howmuch-select">Сколько игроков?</div>
             </fieldset>
             <fieldset>
-                <div id="howmuchmafia-select">Сколько тел мафии?</div>
+                <div id="howmuchmafia-select">Сколько мафии?</div>
             </fieldset>
-            <div></div>
             <fieldset>
                 <input id="diavolo" type="checkbox" value="diavolo">
-                <label for="diavolo">Дон - умеет проверять игрока на коммисара ночью</label>
+                <label for="diavolo">Дон мафии</label>
             </fieldset>
             <fieldset>
                 <input id="kommie" type="checkbox" value="diavolo" checked>
-                <label for="kommie">Коммисар - умеет проверять игрока на мафию ночью</label>
+                <label for="kommie">Комисcар</label>
             </fieldset>
-            <div></div>
             <fieldset>
                 <input id="trish" type="checkbox" value="trish">
-                <label for="trish">Дочь - мирная, при смерти дона становится мафией</label>
+                <label for="trish">Дочь</label>
             </fieldset>
             <fieldset>
                 <input id="doc" type="checkbox" value="doctor">
-                <label for="doc">Доктор - умеет спасать от смерти ночью одного игрока</label>
+                <label for="doc">Доктор</label>
             </fieldset>
             <fieldset>
                 <input id="maniac" type="checkbox" value="maniac">
-                <label for="maniac">Маньяк - играет против всех, убивает аналогично мафии одного игрока по ночам</label>
+                <label for="maniac">Маньяк</label>
             </fieldset>
             <button id="manage">разобрать роли</button>
         </div>
-    </div>
-    <div class="container">
         <div class="card hidden" id="results-card">
             <h2>Результаты распределения</h2>
-            <div id="results"></div>
+            <div id="results" class="result-block"></div>
         </div>
     </div>
-    <script>
-        createNumSelect('howmuchmafia-select', 'howmuchmafia', 2, 5);
-        createNumSelect('howmuch-select', 'howmuch', 8, 15);
 
-        document.getElementById('trish').addEventListener('click', (ev) => {
-            if (ev.target.checked) {
-                document.getElementById('diavolo').checked = true;
-            }
-        });
-
-        document.getElementById('manage').addEventListener('click', (ev) => {
-            let maniac = document.getElementById('maniac').checked;
-            let kommie = document.getElementById('kommie').checked;
-            let diavolo = document.getElementById('diavolo').checked;
-            let trish = document.getElementById('trish').checked;
-            let doc = document.getElementById('doc').checked;
-            let peaceful = document.getElementById('howmuch').value;
-            
-            let mafia = document.getElementById('howmuchmafia').value;
-
-            peaceful -= mafia;
-
-            let roles = [];
-
-            if (kommie) {
-                roles.push('Коммисар');
-                peaceful--;
-            }
-
-            if (maniac) {
-                roles.push('Маньяк');
-                peaceful--;
-            }
-
-            if (diavolo) {
-                roles.push('Дон мафии');
-                mafia--;
-
-                if (trish) {
-                    roles.push('Дочь мафии');
-                    peaceful--;
-                }
-            }
-
-            if (doc) {
-                roles.push('Доктор');
-                peaceful--;
-            }
-
-            for (let maf = 0; maf < mafia; maf++) {
-                roles.push('Мафия');
-            }
-
-            for (let peace = 0; peace < peaceful; peace++) {
-                roles.push('Мирный');
-            }
-
-            shuffle(roles);
-
-            let resultCard = document.getElementById('results-card');
-            let resultBlock = document.getElementById('results');
-
-            resultBlock.innerHTML = '';
-
-            roles.forEach((element, index) => {
-                let realIndex = index + 1;
-                let block = `<div class=\"result-line\">${realIndex} ${element}</div>`;
-
-                resultBlock.innerHTML += block;
-            });
-
-            resultCard.classList.remove('hidden');
-        });
-
-        function shuffle(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                let j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-        }
-
-        function createNumSelect(id, selectId, min, max) {
-            let select = `<select id="${selectId}">`
-            
-            for (let index = min; index <= max; index++) {
-                select += `<option value="${index}">${index}</option>`
-            }
-
-            select += "</select>";
-
-            document.getElementById(id).innerHTML += select;
-        } 
-    </script>
-
-    <style>
-        select {
-            margin: 0 10px;
-        }
-        .container {
-            width: 1200px;
-            margin: auto;
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 16px;
-        }
-
-        .card {
-            margin: 20px auto;
-            padding: 20px;
-            width: 600px;
-            border: 1px #dedede solid;
-            box-shadow: 0 2px 2px hsl(0, 0%, 80%);
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .result-line {
-            margin: 5px 0;
-        }
-
-        fieldset {
-            margin: 5px 0;
-            border: 2px #de1212 solid !important;
-            box-shadow: 0 2px 2px #ff4040;
-        }
-
-        button {
-            background-color: #de1212;
-            border: none;
-            color: white;
-            padding: 15px 32px;
-            text-align: center;
-            text-decoration: none;
-            display: block;
-            font-size: 16px;
-            margin: 15px auto auto;
-        }
-    </style>
+    <script src="app.js"></script>
 </body>
 
 </html>
